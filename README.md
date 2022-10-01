@@ -23,6 +23,7 @@ pip install aioworkers-boto
 s3:
   cls: aioworkers_boto.storage.Storage
   bucket: mybucket
+  path: subdir/subsubdir
   connection:
     endpoint_url: https://...
     aws_secret_access_key: '&124323453456789'
