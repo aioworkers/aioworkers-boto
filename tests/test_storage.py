@@ -80,6 +80,7 @@ async def test_empty_bucket_get():
         ("/a", "b", "/a/b"),
         ("a", "b", "a/b"),
         ("a/c", "b", "a/c/b"),
+        ("a/c", "/b", "a/c/b"),
     ],
 )
 def test_raw_key(path, key, result):
@@ -102,6 +103,6 @@ def test_bad_key(path, key):
 
 def test_set_cfg():
     s = Storage(path="a")
-    assert s._path == "a"
+    assert s._path == "a/"
     s.set_config(ValueExtractor(dict(path="b", name="n")))
-    assert s._path == "b"
+    assert s._path == "b/"

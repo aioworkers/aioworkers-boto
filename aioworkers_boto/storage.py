@@ -1,31 +1,36 @@
-import os
 from typing import Any
 
 from aioworkers.core.formatter import FormattedEntity
 from aioworkers.storage.base import AbstractStorage
-from aioworkers.storage.filesystem import flat
 
 from aioworkers_boto.core import Connector
 
 
 class Storage(AbstractStorage, FormattedEntity, Connector):
+    SEP = "/"
+
     def __init__(self, *args, **kwargs):
         kwargs["service_name"] = "s3"
-        self._path = kwargs.get("path", "")
+        self._path = self._prepare_path(kwargs.get("path", ""))
         self._bucket = kwargs.get("bucket", "")
         super().__init__(*args, **kwargs)
 
+    def _prepare_path(self, path: str) -> str:
+        if path and not path.endswith(self.SEP):
+            path += self.SEP
+        return path
+
     def set_config(self, config) -> None:
         super().set_config(config)
-        self._path = self.config.get("path", self._path)
+        self._path = self._prepare_path(self.config.get("path", self._path))
         self._bucket = self.config.get("bucket", self._bucket)
 
-    def raw_key(self, *key) -> str:
-        path = os.path.join(self._path, *flat(key))
-        result = os.path.normpath(path)
-        if not result.startswith(self._path):
-            raise ValueError("Access denied: %s" % result)
-        return result
+    def raw_key(self, key: str) -> str:
+        if ".." in key:
+            raise ValueError("Access denied: %s" % key)
+        elif key.startswith(self.SEP):
+            key = key.lstrip(self.SEP)
+        return self._path + key
 
     async def get(self, key: str, *, bucket: str = "") -> Any:
         kwargs = {"Key": self.raw_key(key)}
