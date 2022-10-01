@@ -14,8 +14,8 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install Hatch
-      run: pip install --upgrade hatch
+    - name: Install Hatch and mypy
+      run: pip install --upgrade hatch mypy
 
     - name: Build and publish
       env:
