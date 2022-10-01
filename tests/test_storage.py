@@ -76,7 +76,7 @@ async def test_empty_bucket_get():
 @pytest.mark.parametrize(
     "path,key,result",
     [
-        (".", "b", "b"),
+        ("", "b", "b"),
         ("/a", "b", "/a/b"),
         ("a", "b", "a/b"),
         ("a/c", "b", "a/c/b"),

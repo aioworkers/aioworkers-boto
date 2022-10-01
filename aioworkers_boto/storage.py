@@ -1,5 +1,4 @@
 import os
-from pathlib import PurePath
 from typing import Any
 
 from aioworkers.core.formatter import FormattedEntity
@@ -12,7 +11,7 @@ from aioworkers_boto.core import Connector
 class Storage(AbstractStorage, FormattedEntity, Connector):
     def __init__(self, *args, **kwargs):
         kwargs["service_name"] = "s3"
-        self._path = kwargs.get("path", ".")
+        self._path = kwargs.get("path", "")
         self._bucket = kwargs.get("bucket", "")
         super().__init__(*args, **kwargs)
 
@@ -21,14 +20,15 @@ class Storage(AbstractStorage, FormattedEntity, Connector):
         self._path = self.config.get("path", self._path)
         self._bucket = self.config.get("bucket", self._bucket)
 
-    def raw_key(self, *key) -> PurePath:
+    def raw_key(self, *key) -> str:
         path = os.path.join(self._path, *flat(key))
-        result = PurePath(os.path.normpath(path))
-        result.relative_to(self._path)
+        result = os.path.normpath(path)
+        if not result.startswith(self._path):
+            raise ValueError("Access denied: %s" % result)
         return result
 
     async def get(self, key: str, *, bucket: str = "") -> Any:
-        kwargs = {"Key": str(self.raw_key(key))}
+        kwargs = {"Key": self.raw_key(key)}
         bucket = bucket or self._bucket
         if bucket:
             kwargs["Bucket"] = bucket
@@ -39,7 +39,7 @@ class Storage(AbstractStorage, FormattedEntity, Connector):
             return self.decode(await stream.read())
 
     async def set(self, key: str, value: Any, *, bucket: str = ""):
-        kwargs = {"Key": str(self.raw_key(key))}
+        kwargs = {"Key": self.raw_key(key)}
         bucket = bucket or self._bucket
         if bucket:
             kwargs["Bucket"] = bucket
