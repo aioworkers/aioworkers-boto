@@ -8,7 +8,12 @@ description = 'Connector and storage over boto'
 readme = "README.md"
 requires-python = ">=3.7"
 license = "Apache-2.0"
-keywords = []
+keywords = [
+  "aioworkers",
+  "s3",
+  "boto",
+  "botocore",
+]
 authors = [
   { name = "Alexander Malev", email = "malev@somedev.ru" },
 ]
@@ -49,15 +54,15 @@ dependencies = [
   "pytest-asyncio",
   "pytest-aioworkers",
   "pytest-mock",
-  "mypy",
   "pyyaml",
-  "isort",
-  "black",
-  "flake8",
 ]
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=aioworkers_boto --cov=tests"
 no-cov = "cov --no-cov"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests", "aioworkers_boto"]
 
 [[tool.hatch.envs.test.matrix]]
 python = ["37", "38", "39", "310"]
@@ -82,3 +87,25 @@ target-version = ["py37", "py38", "py39", "py310"]
 
 [tool.mypy]
 ignore_missing_imports = true
+check_untyped_defs = true
+
+[tool.hatch.envs.style]
+detached = true
+dependencies = [
+  "flake8",
+  "black",
+  "isort",
+  "mypy",
+]
+[tool.hatch.envs.style.scripts]
+check = [
+  "flake8 aioworkers_boto tests",
+  "isort --check-only --diff aioworkers_boto tests",
+  "black --check --diff aioworkers_boto tests",
+  "mypy aioworkers_boto tests",
+]
+fmt = [
+  "isort aioworkers_boto tests",
+  "black aioworkers_boto tests",
+  "check",
+]
