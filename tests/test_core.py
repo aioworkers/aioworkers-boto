@@ -1,11 +1,8 @@
 from unittest.mock import MagicMock
 
-import pytest
 from aiobotocore.session import AioSession
 
 from aioworkers_boto.core import Connector
-
-pytestmark = pytest.mark.asyncio
 
 
 def mocked_factory(*args, **kwargs):
@@ -30,3 +27,10 @@ async def test_connector(mocker):
 async def test_disconnect(mocker):
     c = Connector()
     await c.disconnect()
+
+
+async def test_async_contextmanager(mocker):
+    mocker.patch.object(AioSession, "create_client", mocked_factory)
+    c = Connector(endpoint_url="http://localhost/api/")
+    async with c:
+        assert c.client
