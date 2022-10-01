@@ -7,7 +7,7 @@ from aioworkers_boto.core import Connector
 
 
 class Storage(AbstractStorage, FormattedEntity, Connector):
-    SEP = "/"
+    _SEP = "/"
 
     def __init__(self, *args, **kwargs):
         kwargs["service_name"] = "s3"
@@ -16,8 +16,8 @@ class Storage(AbstractStorage, FormattedEntity, Connector):
         super().__init__(*args, **kwargs)
 
     def _prepare_path(self, path: str) -> str:
-        if path and not path.endswith(self.SEP):
-            path += self.SEP
+        if path and not path.endswith(self._SEP):
+            path += self._SEP
         return path
 
     def set_config(self, config) -> None:
@@ -28,8 +28,8 @@ class Storage(AbstractStorage, FormattedEntity, Connector):
     def raw_key(self, key: str) -> str:
         if ".." in key:
             raise ValueError("Access denied: %s" % key)
-        elif key.startswith(self.SEP):
-            key = key.lstrip(self.SEP)
+        elif key.startswith(self._SEP):
+            key = key.lstrip(self._SEP)
         return self._path + key
 
     async def get(self, key: str, *, bucket: str = "") -> Any:
