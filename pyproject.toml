@@ -37,7 +37,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev-lint = [
   "black==23.3.0",
-  "isort==5.11.5",
+  "isort==5.12.0",
   "mypy==1.2.0",
   "ruff==0.0.265",
   "types-PyYAML",
