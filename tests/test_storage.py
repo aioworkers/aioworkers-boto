@@ -15,17 +15,22 @@ async def mocked_client_factory(data):
     async def read():
         return data
 
-    async def get_stream(*args, **kwargs):
-        return MagicMock(read=read)
+    class AsyncContextManager:
+        def __init__(self, *args):
+            self._body = MagicMock(read=read)
+
+        async def __aenter__(self):
+            return self._body
+
+        async def __aexit__(self, exc_type, exc, tb):
+            pass
 
     client = MagicMock(
         get_object=get_resp,
         put_object=get_resp,
         delete_object=get_resp,
     )
-    body = resp["Body"]
-    body.__aenter__ = get_stream
-    body.__aexit__ = get_stream
+    resp.__getitem__ = AsyncContextManager
     return client
 
 
