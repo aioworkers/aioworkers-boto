@@ -44,7 +44,7 @@ dev-lint = [
 ]
 dev-test = [
   "aioworkers==0.21.1",
-  "aiobotocore==2.4.0",
+  "aiobotocore==2.5.0",
   "coverage[toml]==7.2.5",
   "pytest==7.3.1",
   "pytest-aioworkers[asyncio]==0.4",
