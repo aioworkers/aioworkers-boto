@@ -40,7 +40,7 @@ Issues = "https://github.com/aioworkers/aioworkers-boto/issues"
 Source = "https://github.com/aioworkers/aioworkers-boto"
 
 [tool.hatch.version]
-path = "aioworkers_boto/__about__.py"
+path = "aioworkers_boto/__init__.py"
 
 [tool.hatch.build.targets.sdist]
 packages = ["aioworkers_boto"]
