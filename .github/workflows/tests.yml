@@ -47,19 +47,19 @@ jobs:
       - name: ruff
         if: ${{ matrix.lint }}
         run: |
-          hatch run style:ruff check aioworkers_boto tests
+          hatch run lint:ruff check aioworkers_boto tests
       - name: isort
         if: ${{ matrix.lint }}
         run: |
-          hatch run style:isort -c aioworkers_boto tests
+          hatch run lint:isort -c aioworkers_boto tests
       - name: black
         if: ${{ matrix.lint }}
         run: |
-          hatch run style:black --check --diff aioworkers_boto tests
+          hatch run lint:black --check --diff aioworkers_boto tests
       - name: mypy
         if: ${{ matrix.lint }}
         run: |
-          hatch run style:mypy aioworkers_boto tests
+          hatch run lint:mypy aioworkers_boto tests
       - name: Tests with coverage
         run: |
           hatch run cov
@@ -71,6 +71,7 @@ jobs:
         if: ${{ matrix.coverage }}
         uses: codecov/codecov-action@v3.1.4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
